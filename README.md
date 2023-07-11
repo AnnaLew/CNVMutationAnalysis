@@ -5,3 +5,4 @@ Steps of running the code:
 3. MergeMutationsCNV
 4. CountGeneCancerPairs
 5. MakeGraphs
+6. Fishers test
