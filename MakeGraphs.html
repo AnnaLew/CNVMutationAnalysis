@@ -9,9 +9,6 @@ output: html_document
 
 ## Setup 
 
-In case you are running files on a cluster you need to load R module:
-system("module load R/4.0.2-foss-2018a-bare")
-
 Load the necessary library
 
 
@@ -44,6 +41,10 @@ Remove NA values
 combinations_counts_clean <- combinations_counts[!is.na(combinations_counts$acronym), ]
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'combinations_counts' not found
+```
+
 Find top 10 gene cancer pairs
 
 
@@ -54,11 +55,19 @@ top10 <- head(combinations_counts_clean[
         decreasing = TRUE),], 10)
 ```
 
+```
+## Error in head(combinations_counts_clean[order(combinations_counts_clean$cnv_positive_mut + : object 'combinations_counts_clean' not found
+```
+
 Transform top_10 into data frame
 
 
 ```r
 top_10 <- data.frame(top10)
+```
+
+```
+## Error in data.frame(top10): object 'top10' not found
 ```
 
 Merge the first two columns with a vertical bar separator
@@ -68,11 +77,19 @@ Merge the first two columns with a vertical bar separator
 top_10$type <- paste(top_10[,1], top_10[,2], sep = " | ")
 ```
 
+```
+## Error in paste(top_10[, 1], top_10[, 2], sep = " | "): object 'top_10' not found
+```
+
 Remove the original columns
 
 
 ```r
 top_10 <- top_10[, -c(1, 2)]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'top_10' not found
 ```
 
 Move the merged_columns column to the front
@@ -82,11 +99,19 @@ Move the merged_columns column to the front
 top_10 <- top_10[, c(ncol(top_10), 1:(ncol(top_10)-1))]
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10' not found
+```
+
 Calculate the proportion of each value in a row
 
 
 ```r
 proportions_df <- round(as.data.frame(t(apply(top_10[,2:7], 1, function(row) row / sum(row)))), 4)
+```
+
+```
+## Error in apply(top_10[, 2:7], 1, function(row) row/sum(row)): object 'top_10' not found
 ```
 
 Add type column to the proportion dataframe
@@ -96,12 +121,27 @@ Add type column to the proportion dataframe
 rownames(proportions_df) <- top_10$type
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10' not found
+```
+
 First, convert the row names into a separate column of the dataframe
 
 
 ```r
 proportions_df$gene <- rownames(proportions_df)
+```
+
+```
+## Error in rownames(proportions_df): object 'proportions_df' not found
+```
+
+```r
 rownames(proportions_df) <- NULL
+```
+
+```
+## Error in rownames(proportions_df) <- NULL: object 'proportions_df' not found
 ```
 
 Then, reshape the dataframe into a long format 
@@ -109,6 +149,10 @@ Then, reshape the dataframe into a long format
 
 ```r
 proportions_long <- tidyr::gather(proportions_df, key = "category", value = "proportion", -gene)
+```
+
+```
+## Error in tidyr::gather(proportions_df, key = "category", value = "proportion", : object 'proportions_df' not found
 ```
 
 ## Create "all data" plot 
@@ -124,14 +168,19 @@ ggp1 <- ggplot(proportions_long, aes(x = gene, y = proportion, fill = category))
   theme_classic() +
   theme(legend.position = "bottom",
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1))
+```
 
+```
+## Error in ggplot(proportions_long, aes(x = gene, y = proportion, fill = category)): object 'proportions_long' not found
+```
+
+```r
 ggp1
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/ggp1-1.png" alt="plot of chunk ggp1"  />
-<p class="caption">plot of chunk ggp1</p>
-</div>
+```
+## Error in eval(expr, envir, enclos): object 'ggp1' not found
+```
 
 ## Save "all data" plot 
 
@@ -140,6 +189,10 @@ Save the plot as a PNG file
 
 ```r
 ggsave("data/graphics/All_data.png", plot = ggp1, dpi = 300)
+```
+
+```
+## Error in plot_theme(plot): object 'ggp1' not found
 ```
 
 ## Extract the data of interest for "Proportions by Gene" plot 
@@ -151,11 +204,19 @@ Remove 'nothing' column
 top_10_only_mc <- top_10[,c(1:4,6:7)]
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10' not found
+```
+
 Calculate the proportion of each value in a row
 
 
 ```r
 proportions_only_mc <- round(as.data.frame(t(apply(top_10_only_mc[,2:6], 1, function(row) row / sum(row)))), 4)
+```
+
+```
+## Error in apply(top_10_only_mc[, 2:6], 1, function(row) row/sum(row)): object 'top_10_only_mc' not found
 ```
 
 Add type column to the proportion dataframe
@@ -165,12 +226,27 @@ Add type column to the proportion dataframe
 rownames(proportions_only_mc) <- top_10_only_mc$type
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc' not found
+```
+
 First, convert the row names into a separate column of the dataframe
 
 
 ```r
 proportions_only_mc$gene <- rownames(proportions_only_mc)
+```
+
+```
+## Error in rownames(proportions_only_mc): object 'proportions_only_mc' not found
+```
+
+```r
 rownames(proportions_only_mc) <- NULL
+```
+
+```
+## Error in rownames(proportions_only_mc) <- NULL: object 'proportions_only_mc' not found
 ```
 
 Then, reshape the dataframe into a long format 
@@ -178,6 +254,10 @@ Then, reshape the dataframe into a long format
 
 ```r
 proportions_only_mc_long <- tidyr::gather(proportions_only_mc, key = "category", value = "proportion", -gene)
+```
+
+```
+## Error in tidyr::gather(proportions_only_mc, key = "category", value = "proportion", : object 'proportions_only_mc' not found
 ```
 
 ## Create "Proportions by Gene" plot 
@@ -193,14 +273,19 @@ ggp2 <- ggplot(proportions_only_mc_long, aes(x = gene, y = proportion, fill = ca
   theme_classic() +
   theme(legend.position = "bottom",
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1))
+```
 
+```
+## Error in ggplot(proportions_only_mc_long, aes(x = gene, y = proportion, : object 'proportions_only_mc_long' not found
+```
+
+```r
 ggp2
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/ggp2-1.png" alt="plot of chunk ggp2"  />
-<p class="caption">plot of chunk ggp2</p>
-</div>
+```
+## Error in eval(expr, envir, enclos): object 'ggp2' not found
+```
 
 ## Save "Proportions by Gene" plot 
 
@@ -211,16 +296,36 @@ Save the plot as a PNG file
 ggsave("data/graphics/Nothing_removed_plot.png", plot = ggp2, dpi = 300)
 ```
 
+```
+## Error in plot_theme(plot): object 'ggp2' not found
+```
+
 ## Extract the data of interest for log transformed "Proportions by Gene" plot 
 ### LOG TRANSFORM 
 
 
 ```r
 top_10_only_mc_log <- top_10_only_mc
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc' not found
+```
+
+```r
 top_10_only_mc_log[,c(2:6)] <- log(top_10_only_mc_log[,c(2:6)])
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log' not found
+```
+
+```r
 top_10_only_mc_log <- rapply(top_10_only_mc_log, function(x) ifelse(is.infinite(x), 0, x), how = "replace")
+```
+
+```
+## Error in rapply(top_10_only_mc_log, function(x) ifelse(is.infinite(x), : object 'top_10_only_mc_log' not found
 ```
 
 Calculate the proportion of each value in a row
@@ -230,6 +335,10 @@ Calculate the proportion of each value in a row
 proportions_only_mc_log <- round(as.data.frame(t(apply(top_10_only_mc_log[,2:6], 1, function(row) row / sum(row)))), 4)
 ```
 
+```
+## Error in apply(top_10_only_mc_log[, 2:6], 1, function(row) row/sum(row)): object 'top_10_only_mc_log' not found
+```
+
 Add type column to the proportion dataframe
 
 
@@ -237,12 +346,27 @@ Add type column to the proportion dataframe
 rownames(proportions_only_mc_log) <- top_10_only_mc_log$type
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log' not found
+```
+
 First, convert the row names into a separate column of the dataframe
 
 
 ```r
 proportions_only_mc_log$gene <- rownames(proportions_only_mc_log)
+```
+
+```
+## Error in rownames(proportions_only_mc_log): object 'proportions_only_mc_log' not found
+```
+
+```r
 rownames(proportions_only_mc_log) <- NULL
+```
+
+```
+## Error in rownames(proportions_only_mc_log) <- NULL: object 'proportions_only_mc_log' not found
 ```
 
 Then, reshape the dataframe into a long format 
@@ -250,6 +374,10 @@ Then, reshape the dataframe into a long format
 
 ```r
 proportions_only_mc_long_log <- tidyr::gather(proportions_only_mc_log, key = "category", value = "proportion", -gene)
+```
+
+```
+## Error in tidyr::gather(proportions_only_mc_log, key = "category", value = "proportion", : object 'proportions_only_mc_log' not found
 ```
 
 ## Create log transformed "Proportions by Gene" plot 
@@ -265,14 +393,19 @@ ggp3 <- ggplot(proportions_only_mc_long_log, aes(x = gene, y = proportion, fill 
   theme_classic() +
   theme(legend.position = "bottom",
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1))
+```
 
+```
+## Error in ggplot(proportions_only_mc_long_log, aes(x = gene, y = proportion, : object 'proportions_only_mc_long_log' not found
+```
+
+```r
 ggp3
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/ggp3-1.png" alt="plot of chunk ggp3"  />
-<p class="caption">plot of chunk ggp3</p>
-</div>
+```
+## Error in eval(expr, envir, enclos): object 'ggp3' not found
+```
 
 ## Save log transformed "Proportions by Gene" plot 
 
@@ -283,6 +416,10 @@ Save the plot as a PNG file
 ggsave("data/graphics/Log_transformed_original.png", plot = ggp3, dpi = 300)
 ```
 
+```
+## Error in plot_theme(plot): object 'ggp3' not found
+```
+
 ## Extract the data of interest for merged "Proportions by Gene" plot 
 
 Merge cnv and cnv_mut
@@ -290,12 +427,34 @@ Merge cnv and cnv_mut
 
 ```r
 top_10_only_mc_log_merged <- top_10_only_mc_log
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log' not found
+```
+
+```r
 top_10_only_mc_log_merged$cnv <- top_10_only_mc_log_merged$cnv_positive + top_10_only_mc_log_merged$cnv_negative
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log_merged' not found
+```
+
+```r
 top_10_only_mc_log_merged$cnv_mut <- top_10_only_mc_log_merged$cnv_positive_mut + top_10_only_mc_log_merged$cnv_negative_mut
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log_merged' not found
+```
+
+```r
 top_10_only_mc_log_merged <- top_10_only_mc_log_merged[,c(1,2,7,8)]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log_merged' not found
 ```
 
 Calculate the proportion of each value in a row
@@ -305,6 +464,10 @@ Calculate the proportion of each value in a row
 proportions_only_mc_log_shorten <- round(as.data.frame(t(apply(top_10_only_mc_log_merged[,2:4], 1, function(row) row / sum(row)))), 4)
 ```
 
+```
+## Error in apply(top_10_only_mc_log_merged[, 2:4], 1, function(row) row/sum(row)): object 'top_10_only_mc_log_merged' not found
+```
+
 Add type column to the proportion dataframe
 
 
@@ -312,12 +475,27 @@ Add type column to the proportion dataframe
 rownames(proportions_only_mc_log_shorten) <- top_10_only_mc_log_merged$type
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'top_10_only_mc_log_merged' not found
+```
+
 First, convert the row names into a separate column of the dataframe
 
 
 ```r
 proportions_only_mc_log_shorten$gene <- rownames(proportions_only_mc_log_shorten)
+```
+
+```
+## Error in rownames(proportions_only_mc_log_shorten): object 'proportions_only_mc_log_shorten' not found
+```
+
+```r
 rownames(proportions_only_mc_log_shorten) <- NULL
+```
+
+```
+## Error in rownames(proportions_only_mc_log_shorten) <- NULL: object 'proportions_only_mc_log_shorten' not found
 ```
 
 Then, reshape the dataframe into a long format
@@ -325,6 +503,10 @@ Then, reshape the dataframe into a long format
 
 ```r
 proportions_only_mc_long_log_shorten <- tidyr::gather(proportions_only_mc_log_shorten, key = "category", value = "proportion", -gene)
+```
+
+```
+## Error in tidyr::gather(proportions_only_mc_log_shorten, key = "category", : object 'proportions_only_mc_log_shorten' not found
 ```
 
 Reorder the levels of the category variable, so it looks better on the graph
@@ -335,6 +517,10 @@ proportions_only_mc_long_log_shorten$category <- factor(
   proportions_only_mc_long_log_shorten$category,
   levels = c("cnv_mut", "cnv", "mut_only")
 )
+```
+
+```
+## Error in factor(proportions_only_mc_long_log_shorten$category, levels = c("cnv_mut", : object 'proportions_only_mc_long_log_shorten' not found
 ```
 
 ## Create merged "Proportions by Gene" plot 
@@ -350,14 +536,19 @@ ggp4 <- ggplot(proportions_only_mc_long_log_shorten, aes(x = gene, y = proportio
   theme_classic() +
   theme(legend.position = "bottom",
     axis.text.x = element_text(angle = 45, size = 8, hjust = 1))
+```
 
+```
+## Error in ggplot(proportions_only_mc_long_log_shorten, aes(x = gene, y = proportion, : object 'proportions_only_mc_long_log_shorten' not found
+```
+
+```r
 ggp4
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure/ggp4-1.png" alt="plot of chunk ggp4"  />
-<p class="caption">plot of chunk ggp4</p>
-</div>
+```
+## Error in eval(expr, envir, enclos): object 'ggp4' not found
+```
 
 ## Save merged "Proportions by Gene" plot 
 
@@ -366,4 +557,60 @@ Save the plot as a PNG file
 
 ```r
 ggsave("data/graphics/Log_transformed_merged.png", plot = ggp4, dpi = 300)
+```
+
+```
+## Error in plot_theme(plot): object 'ggp4' not found
+```
+
+## Volcano plots 
+
+Load the data
+
+
+```r
+fishers_negative <- read.csv("data/fishersTest/fishers_negative.csv", head = TRUE)
+```
+
+Create volcano negative plot
+
+
+```r
+volcano_plot_negative <- ggplot(fishers_negative, aes(x = odds, y = p.adj)) +
+  geom_point(color = "blue", size = 3) +
+  labs(title = "Volcano Plot",
+       x = "Odds",
+       y = "Adjusted p-value")
+```
+
+Save the plot
+
+
+```r
+ggsave("data/graphics/volcano_fishers_negative.png", plot = volcano_plot_negative, dpi = 300)
+```
+
+Load the data
+
+
+```r
+fishers_positive <- read.csv("data/fishersTest/fishers_positive.csv", head = TRUE)
+```
+
+Create volcano positive plot
+
+
+```r
+volcano_plot_positive <- ggplot(fishers_positive, aes(x = odds, y = p.adj)) +
+  geom_point(color = "blue", size = 3) +
+  labs(title = "Volcano Plot",
+       x = "Odds",
+       y = "Adjusted p-value")
+```
+
+Save the plot
+
+
+```r
+ggsave("data/graphics/volcano_fishers_positive.png", plot = volcano_plot_positive, dpi = 300)
 ```

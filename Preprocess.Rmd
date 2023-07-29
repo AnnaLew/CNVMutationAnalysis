@@ -9,9 +9,6 @@ output: html_document
 
 ## Setup
 
-In case you are running files on a cluster you need to load R module:
-system("module load R/4.0.2-foss-2018a-bare")
-
 Load the necessary library
 
 

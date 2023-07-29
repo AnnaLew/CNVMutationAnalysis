@@ -11,9 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Setup 
 
-In case you are running files on a cluster you need to load R module:
-system("module load R/4.0.2-foss-2018a-bare")
-
 Load the necessary library
 
 ```{r libraries, warning=FALSE, message=FALSE}
@@ -304,4 +301,50 @@ Save the plot as a PNG file
 
 ```{r ggp4Save, warning=FALSE, message=FALSE}
 ggsave("data/graphics/Log_transformed_merged.png", plot = ggp4, dpi = 300)
+```
+
+## Volcano plots 
+
+Load the data
+
+```{r loadFishersNegative}
+fishers_negative <- read.csv("data/fishersTest/fishers_negative.csv", head = TRUE)
+```
+
+Create volcano negative plot
+
+```{r volcanoNegative}
+volcano_plot_negative <- ggplot(fishers_negative, aes(x = odds, y = p.adj)) +
+  geom_point(color = "blue", size = 3) +
+  labs(title = "Volcano Plot",
+       x = "Odds",
+       y = "Adjusted p-value")
+```
+
+Save the plot
+
+```{r volcanoNegativeSave, warning=FALSE, message=FALSE}
+ggsave("data/graphics/volcano_fishers_negative.png", plot = volcano_plot_negative, dpi = 300)
+```
+
+Load the data
+
+```{r loadFishersPositive}
+fishers_positive <- read.csv("data/fishersTest/fishers_positive.csv", head = TRUE)
+```
+
+Create volcano positive plot
+
+```{r volcanoPositive}
+volcano_plot_positive <- ggplot(fishers_positive, aes(x = odds, y = p.adj)) +
+  geom_point(color = "blue", size = 3) +
+  labs(title = "Volcano Plot",
+       x = "Odds",
+       y = "Adjusted p-value")
+```
+
+Save the plot
+
+```{r volcanoPositiveSave, warning=FALSE, message=FALSE}
+ggsave("data/graphics/volcano_fishers_positive.png", plot = volcano_plot_positive, dpi = 300)
 ```

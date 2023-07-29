@@ -12,9 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Setup 
 
-In case you are running files on a cluster you need to load R module:
-system("module load R/4.0.2-foss-2018a-bare")
-
 Load the necessary library
 
 ```{r libraries, warning=FALSE, message=FALSE}
@@ -89,7 +86,7 @@ positive$p.adj <- p.adjust(positive$p.value, method = "BH")
 negative$p.adj <- p.adjust(negative$p.value, method = "BH")
 ```
 
-Check number of p.adj.values below 0.05
+Check number of p.adj.values below 0.1
 
 ```{r checkAdj}
 sum(positive$p.adj < 0.1)
