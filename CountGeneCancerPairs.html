@@ -1,0 +1,85 @@
+---
+title: "CountGeneCancerPairs"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+## Setup 
+
+In case you are running files on a cluster you need to load R module:
+system("module load R/4.0.2-foss-2018a-bare")
+
+Load the necessary library
+
+
+```r
+library(dplyr)
+library(tidyr)
+```
+
+## Load the data
+
+Read in the merged data from the CSV file
+
+
+```r
+merged_data <- read.csv("data/merged/merged_data.csv", stringsAsFactors = FALSE)
+```
+
+## Count Gene Cancer Pairs
+
+Create a new data frame to hold the counts for each combination
+
+
+```r
+counts <- merged_data %>%
+  group_by(acronym, Hugo_Symbol) %>%
+  summarize(mut_only = sum(Mutation == 1 & (CNV %in% c(0, NA)), na.rm = TRUE),
+            cnv_positive = sum(is.na(Mutation) & CNV %in% c(1, 2), na.rm = TRUE),
+            cnv_negative = sum(is.na(Mutation) & CNV %in% c(-1, -2), na.rm = TRUE),
+            nothing = sum(is.na(Mutation) & CNV == 0, na.rm = TRUE),
+            cnv_positive_mut = sum(Mutation == 1 & CNV %in% c(1, 2), na.rm = TRUE),
+            cnv_negative_mut = sum(Mutation == 1 & CNV %in% c(-1, -2), na.rm = TRUE))
+```
+
+```
+## `summarise()` has grouped output by 'acronym'. You can override using the
+## `.groups` argument.
+```
+
+Merge the counts and all_combinations data frames, filling in 0 for any missing counts
+
+
+```r
+counted_pairs <- counts %>%
+  replace(is.na(.), 0) %>%
+  filter(mut_only + cnv_positive + cnv_negative + nothing + cnv_positive_mut + cnv_negative_mut >= 5)
+```
+
+```
+## Error in `[<-`:
+## ! Assigned data `value` must be compatible with existing data.
+## ℹ Error occurred for column `acronym`.
+## Caused by error in `vec_assign()`:
+## ! Can't convert <double> to <character>.
+```
+
+## Save the file
+
+Write the final table to a CSV file
+
+
+```r
+dir.create("data/countedPairs", recursive = TRUE)
+```
+
+```
+## Warning in dir.create("data/countedPairs", recursive = TRUE):
+## 'data/countedPairs' already exists
+```
+
+```r
+write.csv(counted_pairs, "data/countedPairs/counted_pairs.csv", row.names = FALSE)
+```

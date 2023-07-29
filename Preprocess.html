@@ -1,0 +1,185 @@
+---
+title: "Preprocess"
+author: "Anna Lewkowicz"
+date: "2023-07-11"
+output: html_document
+---
+
+
+
+## Setup
+
+In case you are running files on a cluster you need to load R module:
+system("module load R/4.0.2-foss-2018a-bare")
+
+Load the necessary library
+
+
+
+```r
+library(dplyr)
+```
+
+## Read all the files
+
+
+
+```r
+mutation_data = read.table("data/original/mc3.v0.2.8.PUBLIC.maf.gene_vclass_HGVSp_sample_likelyDriverLoose.tsv", head = TRUE)
+
+patient_data = read.csv("data/original/clinical_PANCAN_patient_with_followup.tsv", header = TRUE, sep = "\t")
+
+cnv_data = read.csv("data/original/all_thresholded.by_genes_whitelisted.tsv", header = TRUE, sep = "\t")
+
+cnv_data_preprocessed <- cnv_data
+
+names(cnv_data_preprocessed)[1] ="Hugo_Symbol"
+```
+
+## Preprocess the data
+
+Add the tumor type information from patient_data to mutation_data
+
+
+
+```r
+mutation_data_merged <- merge(mutation_data, patient_data, by="bcr_patient_barcode", all.x = TRUE, all.y = FALSE) %>%
+  select(bcr_patient_barcode, acronym, Hugo_Symbol, Variant_Classification)
+```
+
+
+```r
+mutation_data_merged$bcr_patient_barcode <- gsub(pattern = "-", replacement= ".", mutation_data_merged$bcr_patient_barcode)
+```
+
+Rename the "Variant_Classification" column to "Mutation"
+
+
+```r
+mutation_data_merged_simplified <- mutation_data_merged
+colnames(mutation_data_merged_simplified)[colnames(mutation_data_merged_simplified) == "Variant_Classification"] <- "Mutation"
+```
+
+Modify the "Mutation" column in the mutation_data_merged_simplified table, changing any non-NA value to 1
+
+
+```r
+mutation_data_merged_simplified$Mutation[!is.na(mutation_data_merged_simplified$Mutation)] <- 1
+```
+
+
+Shorten and edit the names in cnv_data so that they can be matched with patient_data
+ 
+
+
+```r
+names(cnv_data_preprocessed) <- substring(names(cnv_data_preprocessed), 1, 12)
+
+names(cnv_data_preprocessed) <- gsub(pattern = "[.]", replacement= "-", names(cnv_data_preprocessed))
+```
+
+Copy column names to first row, so that it will be easier to work on it (colnames should be unique)
+
+
+
+```r
+cnv_data_preprocessed <- rbind(colnames(cnv_data_preprocessed), cnv_data_preprocessed)
+```
+
+Find acronyms corresponding to the patient barcodes and overwrite them
+
+
+
+```r
+patient_barcodes <- unique(patient_data$bcr_patient_barcode)
+
+for (colnum in 4:ncol(cnv_data_preprocessed)) {
+  if (cnv_data_preprocessed[1, colnum] %in% patient_barcodes) {
+    cnv_data_preprocessed[1, colnum] = patient_data$acronym[which(cnv_data_preprocessed[1, colnum] == patient_data$bcr_patient_barcode)]
+  } else {
+    cnv_data_preprocessed[1, colnum] = NA
+  }
+}
+```
+
+Remove columns that did not have matching acronyms
+
+
+
+```r
+cnv_data_preprocessed <- cnv_data_preprocessed[ , colSums(is.na(cnv_data_preprocessed[1,]))==0]
+```
+
+Remove two unnecesary columns
+
+
+
+```r
+cnv_data_preprocessed <- cnv_data_preprocessed[, -c(2:3)]
+```
+
+Change the colnames to match the ones in mutations data
+
+
+
+```r
+colnames(cnv_data_preprocessed) <- gsub(pattern = "-", replacement= ".", colnames(cnv_data_preprocessed))
+```
+
+Create list with all acronyms in the right order
+
+
+
+```r
+acronyms <- as.character(as.vector(cnv_data_preprocessed[1,]))
+
+acronyms <- acronyms[-1]
+```
+
+Remove the first row
+
+
+
+```r
+cnv_data_preprocessed <- cnv_data_preprocessed[-1, ]
+```
+
+## Save the files
+
+Save merged mutation data
+
+
+
+```r
+dir.create("data/preprocessed", recursive = TRUE)
+```
+
+```
+## Warning in dir.create("data/preprocessed", recursive = TRUE):
+## 'data/preprocessed' already exists
+```
+
+```r
+write.csv(mutation_data_merged, "data/preprocessed/mutation_data_merged.csv", row.names = FALSE)
+
+write.csv(mutation_data_merged_simplified, "data/preprocessed/mutation_data_merged_simplified.csv", row.names = FALSE)
+```
+
+
+Save preprocessed cnv data
+
+
+
+```r
+write.csv(cnv_data_preprocessed, "data/preprocessed/cnv_data_preprocessed.csv")
+```
+
+Save all acronyms
+
+
+
+```r
+saveRDS(acronyms, file = "data/preprocessed/acronyms.rds")
+```
+
+

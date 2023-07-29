@@ -1,0 +1,72 @@
+---
+title: "MergeMutationsCNV"
+author: "Anna Lewkowicz"
+date: "2023-07-11"
+output: html_document
+---
+
+
+
+## Setup 
+
+In case you are running files on a cluster you need to load R module:
+system("module load R/4.0.2-foss-2018a-bare")
+
+Load the necessary library
+
+
+```r
+library(data.table)
+```
+
+## Load the data
+
+
+```r
+cnv_data_processed <- read.csv("data/processed/cnv_data_processed.csv")
+mutation_data_merged <- read.csv("data/preprocessed/mutation_data_merged_simplified.csv")
+```
+
+## Merge mutation and CNV data 
+
+Convert data.frames to data.tables
+
+
+```r
+cnv_data_processed <- data.table(cnv_data_processed)
+mutation_data_merged <- data.table(mutation_data_merged)
+```
+
+Merge mut_sample and cnv_sample data.tables based on "Hugo_Symbol", "bcr_patient_barcode", and "acronym"
+
+
+```r
+merged_data <- merge(cnv_data_processed, mutation_data_merged,
+                      by = c("Hugo_Symbol", "bcr_patient_barcode", "acronym"),
+                      all = TRUE, row.names = FALSE, suffixes = c("", ""))
+```
+
+Select only the desired columns
+
+
+```r
+merged_data <- select(merged_data, -bcr_patient_barcode)
+```
+
+## Save the file
+
+Write merged data.table to a CSV file
+
+
+```r
+dir.create("data/merged", recursive = TRUE)
+```
+
+```
+## Warning in dir.create("data/merged", recursive = TRUE): 'data/merged' already
+## exists
+```
+
+```r
+write.csv(merged_data, file = "data/merged/merged_data.csv", row.names = FALSE)
+```

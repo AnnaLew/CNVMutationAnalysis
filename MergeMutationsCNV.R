@@ -6,8 +6,8 @@
 library(data.table)
 
 #load the data
-cnv_data_processed <- read.csv("cnv_data_processed.csv")
-mutation_data_merged <- read.csv("mutation_data_merged.csv")
+cnv_data_processed <- read.csv("data/processed/cnv_data_processed.csv")
+mutation_data_merged <- read.csv("data/preprocessed/mutation_data_merged.csv")
 
 #convert data.frames to data.tables
 cnv_data_processed <- data.table(cnv_data_processed)
@@ -22,4 +22,4 @@ merged_data <- merge(cnv_data_processed, mutation_data_merged,
 merged_data <- merged_data[, c("Hugo_Symbol", "acronym", "CNV", "Mutation")]
 
 # Write merged data.table to a CSV file
-write.csv(merged_data, file = "merged_data.csv", row.names = FALSE)
+write.csv(merged_data, file = "data/merged/merged_data.csv", row.names = FALSE)

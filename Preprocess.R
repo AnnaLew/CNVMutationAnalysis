@@ -7,11 +7,11 @@ library(dplyr)
 
 # Read all the files
 
-mutation_data = read.table("mc3.v0.2.8.PUBLIC.maf.gene_vclass_HGVSp_sample_likelyDriverLoose.tsv", head = TRUE)
+mutation_data = read.table("data/original/mc3.v0.2.8.PUBLIC.maf.gene_vclass_HGVSp_sample_likelyDriverLoose.tsv", head = TRUE)
 
-patient_data = read.csv("clinical_PANCAN_patient_with_followup.tsv", header = TRUE, sep = "\t")
+patient_data = read.csv("data/original/clinical_PANCAN_patient_with_followup.tsv", header = TRUE, sep = "\t")
 
-cnv_data = read.csv("all_thresholded.by_genes_whitelisted.tsv", header = TRUE, sep = "\t")
+cnv_data = read.csv("data/original/all_thresholded.by_genes_whitelisted.tsv", header = TRUE, sep = "\t")
 
 cnv_data_preprocessed <- cnv_data
 
@@ -68,10 +68,10 @@ acronyms <- acronyms[-1]
 cnv_data_preprocessed <- cnv_data_preprocessed[-1, ]
 
 #Save merged mutation data
-write.csv(mutation_data_merged, "mutation_data_merged.csv")
+write.csv(mutation_data_merged, "data/preprocessed/mutation_data_merged.csv")
 
 # Save preprocessed cnv data
-write.csv(cnv_data_preprocessed, "cnv_data_preprocessed.csv")
+write.csv(cnv_data_preprocessed, "data/preprocessed/cnv_data_preprocessed.csv")
 
 # Save all acronyms
 saveRDS(acronyms, file = "acronyms.rds")
